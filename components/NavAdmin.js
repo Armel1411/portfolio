@@ -24,6 +24,7 @@ export const RUBRIQUES = [
   { chemin: "/admin/parcours", libelle: "Parcours", icone: "▸", teinte: "#38bdf8", groupe: "Contenu", compteur: "parcours" },
   { chemin: "/admin/textes", libelle: "Textes", icone: "✎", teinte: "#a78bfa", groupe: "Site" },
   { chemin: "/admin/documents", libelle: "CV", icone: "▣", teinte: "#2dd4bf", groupe: "Site" },
+  { chemin: "/admin/securite", libelle: "Sécurité", icone: "⛨", teinte: "#f472b6", groupe: "Site" },
 ];
 
 export default function NavAdmin({ email, compteurs = {}, deconnexion }) {

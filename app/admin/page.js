@@ -51,6 +51,10 @@ const ECRANS = [
     chemin: "/admin/documents", icone: "▣", teinte: "#2dd4bf", titre: "CV",
     texte: "Ajouter, remplacer ou retirer le PDF téléchargeable.",
   },
+  {
+    chemin: "/admin/securite", icone: "⛨", teinte: "#f472b6", titre: "Sécurité",
+    texte: "Double authentification et journal des connexions.",
+  },
 ];
 
 export default async function TableauDeBord() {

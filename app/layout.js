@@ -1,4 +1,5 @@
 import "./globals.css";
+import { headers } from "next/headers";
 
 /* ============================================================
    Métadonnées du site
@@ -77,7 +78,12 @@ const DONNEES_STRUCTUREES = {
   knowsLanguage: ["fr", "en"],
 };
 
-export default function RootLayout({ children }) {
+export default async function RootLayout({ children }) {
+  // Le jeton à usage unique est fabriqué par proxy.js et transmis ici.
+  // Sans lui, le bloc de données structurées ci-dessous serait bloqué
+  // par notre propre politique de sécurité.
+  const nonce = (await headers()).get("x-nonce") || undefined;
+
   return (
     <html lang="fr">
       <head>
@@ -89,6 +95,7 @@ export default function RootLayout({ children }) {
         />
         <script
           type="application/ld+json"
+          nonce={nonce}
           dangerouslySetInnerHTML={{ __html: JSON.stringify(DONNEES_STRUCTUREES) }}
         />
       </head>
