@@ -225,6 +225,29 @@ footer {
 }
 footer a:hover { color: var(--text); }
 
+/* Lien vers l'administration : présent, mais qui ne réclame l'attention
+   de personne. */
+.lien-admin {
+  display: inline-block;
+  margin-left: 14px;
+  padding-left: 14px;
+  border-left: 1px solid var(--border);
+  font-size: 0.82rem;
+  color: var(--muted);
+  opacity: 0.65;
+  transition: opacity 0.2s, color 0.2s;
+}
+.lien-admin:hover { opacity: 1; color: var(--accent-2); }
+
+@media (max-width: 480px) {
+  .lien-admin {
+    display: block;
+    margin: 12px 0 0;
+    padding: 0;
+    border-left: 0;
+  }
+}
+
 /* ---------- APPARITION AU SCROLL ---------- */
 .reveal { opacity: 0; transform: translateY(22px); transition: opacity 0.6s ease, transform 0.6s ease; }
 .reveal.on { opacity: 1; transform: none; }
