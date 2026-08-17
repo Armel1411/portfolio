@@ -1,69 +1,53 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+import Entete from "@/components/Entete";
+import Hero from "@/components/Hero";
+import APropos from "@/components/APropos";
+import Competences from "@/components/Competences";
+import Projets from "@/components/Projets";
+import Parcours from "@/components/Parcours";
+import Contact from "@/components/Contact";
+import PiedDePage from "@/components/PiedDePage";
 
-export default function Home() {
+import { lireTextes, lireProjets, lireCompetences, lireParcours } from "@/lib/donnees";
+
+/* ============================================================
+   Page d'accueil
+   ============================================================
+   C'est un composant serveur : les quatre lectures ci-dessous se font
+   sur le serveur, avant l'envoi de la page. Le visiteur reçoit donc du
+   HTML déjà rempli — c'est ce qui garde le référencement intact, et
+   c'était la raison de choisir Next.js plutôt qu'une page statique qui
+   irait chercher ses données en JavaScript.
+
+   revalidate = 0 : pas de mise en cache. Une modification faite dans
+   l'admin est visible au rechargement suivant, sans attendre. Sur un
+   portfolio le trafic est faible, le coût est négligeable — et c'est
+   plus simple que d'avoir à se demander pourquoi un changement n'apparaît
+   pas encore.
+   ============================================================ */
+
+export const revalidate = 0;
+
+export default async function PageAccueil() {
+  // Les quatre lectures sont indépendantes : on les lance en parallèle
+  // plutôt que l'une après l'autre.
+  const [textes, projets, academiques, competences, parcours] = await Promise.all([
+    lireTextes(),
+    lireProjets("principal"),
+    lireProjets("academique"),
+    lireCompetences(),
+    lireParcours(),
+  ]);
+
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className={styles.intro}>
-          <h1>
-            To get started, edit the{" "}
-            <code className={styles.code}>page.js</code> file.
-          </h1>
-          <p>
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className={styles.secondary}
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+    <>
+      <Entete />
+      <Hero textes={textes} />
+      <APropos textes={textes} />
+      <Competences textes={textes} competences={competences} />
+      <Projets textes={textes} projets={projets} academiques={academiques} />
+      <Parcours textes={textes} parcours={parcours} />
+      <Contact textes={textes} />
+      <PiedDePage />
+    </>
   );
 }
