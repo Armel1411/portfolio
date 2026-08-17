@@ -1,5 +1,6 @@
-import { supabaseServeur } from "@/lib/supabase-serveur";
+import EnteteAdmin from "@/components/EnteteAdmin";
 import MessageAdmin from "@/components/MessageAdmin";
+import { supabaseServeur } from "@/lib/supabase-serveur";
 import { creerEtape, enregistrerEtape, supprimerEtape } from "../actions";
 
 export const revalidate = 0;
@@ -9,11 +10,7 @@ export const revalidate = 0;
    ============================================================
    Écran à traiter avec soin : les dates et les intitulés d'ici sont
    exactement ce qu'un recruteur recoupe avec ton CV et ton LinkedIn. Une
-   incohérence entre les trois est plus coûteuse qu'une ligne manquante.
-
-   Sur le nom de l'organisation : « Agence web · Abidjan » plutôt que le
-   nom de l'entreprise, c'est une décision assumée — mais reste capable de
-   répondre franchement si on te pose la question en entretien.
+   incohérence entre les trois coûte plus cher qu'une ligne manquante.
    ============================================================ */
 
 function Formulaire({ etape }) {
@@ -23,7 +20,7 @@ function Formulaire({ etape }) {
     <form action={nouvelle ? creerEtape : enregistrerEtape}>
       {etape ? <input type="hidden" name="id" value={etape.id} /> : null}
 
-      <div className="ligne-3">
+      <div className="ligne-champs-3">
         <div className="champ">
           <label>
             Période <span className="indice">— ex. Juillet — Août 2026</span>
@@ -83,43 +80,57 @@ export default async function PageParcours({ searchParams }) {
 
   return (
     <>
-      <h1>Parcours</h1>
-      <p className="intro">
-        Expériences et formation, de la plus récente à la plus ancienne. Vérifie que les dates
-        d'ici correspondent à celles de ton CV.
-      </p>
+      <EnteteAdmin fil="Administration · Contenu" titre="Parcours" />
 
-      <MessageAdmin parametres={parametres} />
-      {error ? <div className="message erreur">Lecture impossible : {error.message}</div> : null}
+      <div className="admin-contenu">
+        <p className="intro">
+          Expériences et formation, de la plus récente à la plus ancienne. Vérifie que les dates
+          d'ici correspondent à celles de ton CV.
+        </p>
 
-      {etapes.map((etape) => (
-        <div className="bloc" key={etape.id}>
-          <details className="pliant">
-            <summary>
-              {etape.titre}
-              <span className={`etiquette ${etape.visible ? "visible" : "masque"}`}>
-                {etape.visible ? "affichée" : "masquée"}
-              </span>
-              <span className="rang">{etape.periode}</span>
-            </summary>
+        <MessageAdmin parametres={parametres} />
+        {error ? <div className="message erreur">Lecture impossible : {error.message}</div> : null}
 
-            <Formulaire etape={etape} />
+        {etapes.map((etape) => (
+          <div className="ligne-item" key={etape.id}>
+            <div className="ligne-tete">
+              <div className="ligne-corps">
+                <h4>
+                  {etape.titre}
+                  <span className={`pastille-etat ${etape.visible ? "ok" : "off"}`}>
+                    {etape.visible ? "Affichée" : "Masquée"}
+                  </span>
+                </h4>
+                <div className="prov">
+                  {etape.periode} · {etape.organisation}
+                </div>
+              </div>
+              <div className="ligne-cmd">
+                <div className="rang">
+                  <span className="num">{etape.ordre}</span>
+                </div>
+              </div>
+            </div>
 
-            <form action={supprimerEtape} style={{ marginTop: 14 }}>
-              <input type="hidden" name="id" value={etape.id} />
-              <button type="submit" className="bouton bouton-danger">
-                Supprimer définitivement
-              </button>
-            </form>
+            <details className="rapide">
+              <summary>Modifier</summary>
+              <Formulaire etape={etape} />
+              <form action={supprimerEtape} style={{ marginTop: 14 }}>
+                <input type="hidden" name="id" value={etape.id} />
+                <button type="submit" className="bouton bouton-danger">
+                  Supprimer définitivement
+                </button>
+              </form>
+            </details>
+          </div>
+        ))}
+
+        <div className="ligne-item">
+          <details className="rapide" style={{ marginTop: 0, paddingTop: 0, borderTop: 0 }}>
+            <summary>+ Ajouter une étape</summary>
+            <Formulaire />
           </details>
         </div>
-      ))}
-
-      <div className="bloc">
-        <details className="pliant">
-          <summary>+ Ajouter une étape</summary>
-          <Formulaire />
-        </details>
       </div>
     </>
   );

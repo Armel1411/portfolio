@@ -37,9 +37,25 @@ export default function PageConnexion() {
       });
 
       if (error) {
-        // Message volontairement vague : préciser « cet email n'existe
-        // pas » renseignerait un curieux sur les comptes valides.
-        setErreur("Email ou mot de passe incorrect.");
+        // Supabase renvoie le même « Invalid login credentials » que l'email
+        // soit inconnu ou le mot de passe faux : afficher son message ne
+        // renseigne donc personne sur les comptes existants. En revanche, il
+        // distingue le cas du compte non confirmé — et sans cette précision,
+        // on cherche un mot de passe qui était bon depuis le début.
+        const brut = (error.message || "").toLowerCase();
+
+        if (brut.includes("not confirmed")) {
+          setErreur(
+            "Ce compte existe mais n'est pas confirmé. Dans Supabase → Authentication → " +
+              "Users, ouvre l'utilisateur et confirme-le, ou recrée-le en cochant " +
+              "« Auto Confirm User »."
+          );
+        } else if (brut.includes("invalid login")) {
+          setErreur("Email ou mot de passe incorrect.");
+        } else {
+          setErreur(`Connexion refusée par Supabase : ${error.message}`);
+        }
+
         setEnCours(false);
         return;
       }
@@ -49,9 +65,13 @@ export default function PageConnexion() {
       router.push("/admin");
       router.refresh();
     } catch (probleme) {
+      // Ici, la requête n'a même pas atteint Supabase : variables absentes,
+      // adresse invalide, ou réseau coupé. On affiche le message réel — un
+      // message générique fait perdre un temps fou en diagnostic.
       setErreur(
-        "Connexion impossible. Vérifie que .env.local contient bien l'adresse et la clé Supabase, " +
-          "puis redémarre le serveur."
+        `La requête n'a pas atteint Supabase (${probleme?.message || "cause inconnue"}). ` +
+          "Vérifie que .env.local contient bien NEXT_PUBLIC_SUPABASE_URL et " +
+          "NEXT_PUBLIC_SUPABASE_ANON_KEY, noms compris, puis redémarre le serveur."
       );
       console.error(probleme);
       setEnCours(false);

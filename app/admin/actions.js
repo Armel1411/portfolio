@@ -188,6 +188,104 @@ export async function enregistrerProjet(formData) {
   redirect(retourAvecMessage("/admin/projets", message[0], message[1]));
 }
 
+/**
+ * Enregistrement rapide depuis la liste : seulement le titre, le statut
+ * et la visibilité. Les autres champs ne sont pas dans ce formulaire, il
+ * ne faut donc surtout pas les écraser avec des valeurs vides — c'est
+ * pour ça que cette action n'utilise pas champsDuProjet().
+ */
+export async function enregistrementRapideProjet(formData) {
+  const supabase = await clientAuthentifie();
+  if (!supabase) redirect("/admin/connexion");
+
+  const id = String(formData.get("id") || "");
+  const titre = String(formData.get("titre") || "").trim();
+
+  if (!id || !titre) {
+    redirect(retourAvecMessage("/admin/projets", "erreur", "Le titre est obligatoire."));
+  }
+
+  const { error } = await supabase
+    .from("projets")
+    .update({
+      titre,
+      statut: String(formData.get("statut") || "").trim() || null,
+      visible: formData.get("visible") === "on",
+    })
+    .eq("id", id);
+
+  revalidatePath("/");
+
+  redirect(
+    error
+      ? retourAvecMessage("/admin/projets", "erreur", `Enregistrement impossible : ${texteDeLErreur(error)}`)
+      : retourAvecMessage("/admin/projets", "succes", `« ${titre} » mis à jour.`)
+  );
+}
+
+/**
+ * Flèches ▲▼ de la liste.
+ *
+ * Plutôt que d'échanger deux numéros — ce qui ne donne rien si deux
+ * projets portent le même — on reconstruit la liste dans le nouvel ordre
+ * et on renumérote tout de 1 à N. Le classement reste propre même après
+ * des saisies manuelles approximatives.
+ */
+export async function deplacerProjet(formData) {
+  const supabase = await clientAuthentifie();
+  if (!supabase) redirect("/admin/connexion");
+
+  const id = String(formData.get("id") || "");
+  const versLeHaut = String(formData.get("direction") || "") === "haut";
+
+  let message;
+  try {
+    const { data: projet, error: erreurLecture } = await supabase
+      .from("projets")
+      .select("id, categorie")
+      .eq("id", id)
+      .single();
+    if (erreurLecture) throw erreurLecture;
+
+    const { data: liste, error: erreurListe } = await supabase
+      .from("projets")
+      .select("id, ordre")
+      .eq("categorie", projet.categorie)
+      .order("ordre", { ascending: true });
+    if (erreurListe) throw erreurListe;
+
+    const position = liste.findIndex((p) => p.id === id);
+    const nouvellePosition = versLeHaut ? position - 1 : position + 1;
+
+    if (position === -1 || nouvellePosition < 0 || nouvellePosition >= liste.length) {
+      // Déjà en haut ou en bas : rien à faire, et ce n'est pas une erreur.
+      redirect("/admin/projets");
+    }
+
+    const reordonnee = [...liste];
+    const [deplace] = reordonnee.splice(position, 1);
+    reordonnee.splice(nouvellePosition, 0, deplace);
+
+    for (let i = 0; i < reordonnee.length; i++) {
+      const { error } = await supabase
+        .from("projets")
+        .update({ ordre: i + 1 })
+        .eq("id", reordonnee[i].id);
+      if (error) throw error;
+    }
+
+    message = null;
+  } catch (erreur) {
+    // redirect() lève une exception interne à Next : il ne faut pas la
+    // confondre avec une vraie erreur.
+    if (erreur?.digest?.startsWith?.("NEXT_REDIRECT")) throw erreur;
+    message = `Déplacement impossible : ${texteDeLErreur(erreur)}`;
+  }
+
+  revalidatePath("/");
+  redirect(message ? retourAvecMessage("/admin/projets", "erreur", message) : "/admin/projets");
+}
+
 export async function supprimerProjet(formData) {
   const supabase = await clientAuthentifie();
   if (!supabase) redirect("/admin/connexion");
@@ -396,6 +494,35 @@ export async function remplacerCV(formData) {
 
   revalidatePath("/");
   redirect(retourAvecMessage("/admin/documents", message[0], message[1]));
+}
+
+/**
+ * Retirer le CV du site.
+ *
+ * On vide simplement l'adresse : le bouton « Télécharger mon CV »
+ * disparaît alors de la page d'accueil. Le fichier reste dans le
+ * stockage — le retirer du site et l'effacer définitivement sont deux
+ * décisions différentes, et celle-ci est réversible.
+ */
+export async function supprimerCV() {
+  const supabase = await clientAuthentifie();
+  if (!supabase) redirect("/admin/connexion");
+
+  const { error } = await supabase
+    .from("textes")
+    .upsert({ cle: "cv_url", valeur: "", maj_le: new Date().toISOString() }, { onConflict: "cle" });
+
+  revalidatePath("/");
+
+  redirect(
+    error
+      ? retourAvecMessage("/admin/documents", "erreur", `Retrait impossible : ${texteDeLErreur(error)}`)
+      : retourAvecMessage(
+          "/admin/documents",
+          "succes",
+          "CV retiré. Le bouton de téléchargement n'apparaît plus sur le site."
+        )
+  );
 }
 
 /* ============================================================

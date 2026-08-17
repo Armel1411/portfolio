@@ -1,3 +1,4 @@
+import EnteteAdmin from "@/components/EnteteAdmin";
 import { supabaseServeur } from "@/lib/supabase-serveur";
 import MessageAdmin from "@/components/MessageAdmin";
 import { TEXTES_DEFAUT } from "@/lib/contenu-defaut";
@@ -20,6 +21,7 @@ export const revalidate = 0;
 const GROUPES = [
   {
     titre: "Haut de page",
+    teinte: "#a78bfa",
     aide: "Les trois premières lignes que voit un visiteur. C'est ce qui décide s'il descend ou s'il part.",
     champs: [
       { cle: "hero_badge", label: "Pastille verte", indice: "laisse vide pour la masquer" },
@@ -30,6 +32,7 @@ const GROUPES = [
   },
   {
     titre: "À propos",
+    teinte: "#818cf8",
     aide: "Le paragraphe 3 est celui qui dit d'où viennent tes projets. Ne le supprime pas : c'est lui qui te protège de la question « comment as-tu décroché ce client ? » en entretien.",
     champs: [
       { cle: "apropos_titre", label: "Titre de la section" },
@@ -47,6 +50,7 @@ const GROUPES = [
   },
   {
     titre: "Compétences",
+    teinte: "#22d3ee",
     aide: "Le contenu des cartes se modifie dans l'écran Compétences. Ici, seuls le titre et l'introduction.",
     champs: [
       { cle: "competences_titre", label: "Titre de la section" },
@@ -55,6 +59,7 @@ const GROUPES = [
   },
   {
     titre: "Projets",
+    teinte: "#6366f1",
     aide: "Les cartes elles-mêmes se modifient dans l'écran Projets.",
     champs: [
       { cle: "projets_titre", label: "Titre de la section" },
@@ -65,11 +70,13 @@ const GROUPES = [
   },
   {
     titre: "Parcours",
+    teinte: "#38bdf8",
     aide: "Les étapes se modifient dans l'écran Parcours.",
     champs: [{ cle: "parcours_titre", label: "Titre de la section" }],
   },
   {
     titre: "Contact",
+    teinte: "#2dd4bf",
     aide: "Le numéro est découpé en trois morceaux exprès : ainsi il n'est jamais écrit en entier dans le code de la page, et les robots qui aspirent les numéros ne le récupèrent pas. Le navigateur du visiteur le recompose au moment de l'affichage.",
     champs: [
       { cle: "contact_titre", label: "Titre de la section" },
@@ -98,59 +105,66 @@ export default async function PageTextes({ searchParams }) {
 
   return (
     <>
-      <h1>Textes du site</h1>
-      <p className="intro">
-        Modifie ce que tu veux, puis enregistre en bas de page. Un seul bouton pour l'ensemble.
-      </p>
+      <EnteteAdmin fil="Administration · Site" titre="Textes du site" />
 
-      <MessageAdmin parametres={parametres} />
-      {error ? <div className="message erreur">Lecture impossible : {error.message}</div> : null}
+      <div className="admin-contenu">
+        <p className="intro">
+          Modifie ce que tu veux, puis enregistre — un seul bouton pour l'ensemble de la page.
+        </p>
 
-      <form action={enregistrerTextes}>
-        {GROUPES.map((groupe) => (
-          <div className="bloc" key={groupe.titre}>
-            <h2>{groupe.titre}</h2>
-            <p className="aide">{groupe.aide}</p>
+        <MessageAdmin parametres={parametres} />
+        {error ? <div className="message erreur">Lecture impossible : {error.message}</div> : null}
 
-            {groupe.champs.map((champ) => (
-              <div className="champ" key={champ.cle}>
-                <label htmlFor={champ.cle}>
-                  {champ.label}
-                  {champ.indice ? <span className="indice"> — {champ.indice}</span> : null}
-                  {champ.gras ? <span className="indice"> — gras autorisé avec **…**</span> : null}
-                </label>
+        <form action={enregistrerTextes}>
+          {GROUPES.map((groupe) => (
+            <div className="bloc teinte" key={groupe.titre} style={{ "--teinte": groupe.teinte }}>
+              <h2>{groupe.titre}</h2>
+              <p className="aide">{groupe.aide}</p>
 
-                {champ.zone ? (
-                  <textarea
-                    id={champ.cle}
-                    name={champ.cle}
-                    rows={champ.lignes || 3}
-                    defaultValue={valeurs[champ.cle] || ""}
-                  />
-                ) : (
-                  <input
-                    id={champ.cle}
-                    type="text"
-                    name={champ.cle}
-                    defaultValue={valeurs[champ.cle] || ""}
-                  />
-                )}
-              </div>
-            ))}
-          </div>
-        ))}
+              {groupe.champs.map((champ) => (
+                <div className="champ" key={champ.cle}>
+                  <label htmlFor={champ.cle}>
+                    {champ.label}
+                    {champ.indice ? <span className="indice"> — {champ.indice}</span> : null}
+                    {champ.gras ? <span className="indice"> — gras autorisé avec **…**</span> : null}
+                  </label>
 
-        {/* Conservée telle quelle : c'est l'écran CV qui la met à jour,
-            mais elle doit rester dans le formulaire sinon l'enregistrement
+                  {champ.zone ? (
+                    <textarea
+                      id={champ.cle}
+                      name={champ.cle}
+                      rows={champ.lignes || 3}
+                      defaultValue={valeurs[champ.cle] || ""}
+                    />
+                  ) : (
+                    <input
+                      id={champ.cle}
+                      type="text"
+                      name={champ.cle}
+                      defaultValue={valeurs[champ.cle] || ""}
+                    />
+                  )}
+                </div>
+              ))}
+            </div>
+          ))}
+
+          {/* Conservée telle quelle : c'est l'écran CV qui la met à jour,
+              mais elle doit rester dans le formulaire sinon l'enregistrement
             ne la verrait pas et elle resterait figée. */}
-        <input type="hidden" name="cv_url" value={valeurs.cv_url || ""} />
+          <input type="hidden" name="cv_url" value={valeurs.cv_url || ""} />
 
-        <div className="actions">
-          <button type="submit" className="bouton">
-            Enregistrer tous les textes
-          </button>
-        </div>
-      </form>
+          <div className="barre-enregistrer">
+            <span className="rappel">
+              Un seul enregistrement pour toute la page. Les modifications apparaissent sur le site
+              au rechargement suivant.
+            </span>
+            <button type="submit" className="bouton">
+              Enregistrer tous les textes
+            </button>
+          </div>
+        </form>
+      </div>
     </>
   );
 }
