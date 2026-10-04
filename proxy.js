@@ -82,7 +82,10 @@ export async function proxy(request) {
   // ------------------------------------------------------------------
   //  Pages publiques : la CSP suffit, on ne va pas plus loin.
   // ------------------------------------------------------------------
-  const zoneProtegee = pathname.startsWith("/admin") && pathname !== "/admin/connexion";
+  // La connexion et le choix d'un nouveau mot de passe doivent rester
+  // accessibles sans être connecté : c'est justement leur rôle.
+  const pagesLibres = ["/admin/connexion", "/admin/nouveau-mot-de-passe"];
+  const zoneProtegee = pathname.startsWith("/admin") && !pagesLibres.includes(pathname);
   if (!zoneProtegee) return reponseDeBase();
 
   if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
