@@ -335,7 +335,9 @@ h2 { font-size: clamp(1.8rem, 3.6vw, 2.6rem); font-weight: 750; letter-spacing: 
 }
 
 /* ---------- PROJETS ---------- */
-.projects { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; }
+/* Deux colonnes sur ordinateur : avec quatre projets, la grille reste équilibrée
+   et les captures d'écran gardent une taille lisible. */
+.projects { display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 24px; }
 .project {
   background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
   overflow: hidden; transition: transform 0.25s;
@@ -343,7 +345,7 @@ h2 { font-size: clamp(1.8rem, 3.6vw, 2.6rem); font-weight: 750; letter-spacing: 
 }
 .project:hover { transform: translateY(-4px); }
 .thumb {
-  height: 200px; display: grid; place-items: center; font-size: 2.6rem; position: relative;
+  height: 240px; display: grid; place-items: center; font-size: 2.6rem; position: relative;
   background: linear-gradient(135deg, rgba(99, 102, 241, 0.22), rgba(34, 211, 238, 0.14));
   border-bottom: 1px solid var(--border); overflow: hidden;
 }

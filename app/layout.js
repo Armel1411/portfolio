@@ -22,7 +22,7 @@ export const metadata = {
   title: "Yves Armel — Développeur web Next.js & React | Abidjan",
   description:
     "Développeur web à Abidjan. Je conçois et développe des sites et applications avec " +
-    "Next.js et React, du design à la mise en production. Deux projets en ligne.",
+    "Next.js et React, du design à la mise en production. Trois projets en ligne.",
   authors: [{ name: "M'BANDAN Yves Armel" }],
   alternates: { canonical: "/" },
   robots: { index: true, follow: true },
@@ -33,7 +33,7 @@ export const metadata = {
     siteName: "Yves Armel — Développeur web",
     title: "Yves Armel — Développeur web Next.js & React",
     description:
-      "Sites et applications web sur mesure avec Next.js et React. Deux projets livrés " +
+      "Sites et applications web sur mesure avec Next.js et React. Trois projets livrés " +
       "en production. Basé à Abidjan, Côte d'Ivoire.",
     images: [
       {
@@ -48,7 +48,7 @@ export const metadata = {
     card: "summary_large_image",
     title: "Yves Armel — Développeur web Next.js & React",
     description:
-      "Sites et applications web sur mesure avec Next.js et React. Deux projets livrés en production.",
+      "Sites et applications web sur mesure avec Next.js et React. Trois projets livrés en production.",
     images: ["/images/og-image.png"],
   },
 };

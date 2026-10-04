@@ -31,6 +31,26 @@ function VignetteCode({ projet, technologies }) {
     .slice(0, 3)
     .join("-");
 
+  // Projet Flutter : l'aperçu montre du Dart, pas du JavaScript.
+  const estFlutter = technologies.some((t) => /flutter|dart/i.test(t));
+  if (estFlutter) {
+    return (
+      <div className="thumb thumb-code" aria-hidden="true">
+        <pre>
+          <span className="c-com">{`// lib/${nomFichier.replace(/-/g, "_")}.dart`}</span>
+          {"\n"}
+          <span className="c-mot">import</span> <span className="c-chaine">{"'package:flutter/material.dart'"}</span>;
+          {"\n\n"}
+          <span className="c-mot">void</span> <span className="c-nom">main</span>() =&gt; <span className="c-nom">runApp</span>(<span className="c-mot">const</span> <span className="c-nom">App</span>());
+          {"\n\n"}
+          <span className="c-com">{"// Android · iOS"}</span>
+          <span className="t-curseur" />
+        </pre>
+        <span className="thumb-emoji">{projet.emoji || "📱"}</span>
+      </div>
+    );
+  }
+
   return (
     <div className="thumb thumb-code" aria-hidden="true">
       <pre>
