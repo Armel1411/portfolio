@@ -8,8 +8,8 @@
 --    - sinon la carte est créée ;
 --    - jamais de doublon.
 --
---  Pas encore d'image : la carte affiche un aperçu « code » en attendant
---  la capture de la page d'accueil (à ajouter depuis /admin → Projets).
+--  L'image /images/reservo.jpg (page d'accueil) est servie par le site lui-même
+--  (dossier public/images). Remplaçable plus tard depuis /admin → Projets.
 -- ============================================================
 
 -- 1. Mise à jour de l'ancienne carte, si elle existe.
@@ -25,7 +25,7 @@ set titre             = 'Reservo — Réservation de services à Abidjan',
                      || '— client, prestataire, administrateur — et une architecture générique : une seule table '
                      || 'd''annonces avec des détails propres à chaque catégorie.',
     technologies      = 'Next.js, PostgreSQL, Prisma, Auth.js, Tailwind CSS',
-    image_url         = null,
+    image_url         = '/images/reservo.jpg',
     emoji             = '🗓️',
     lien_site         = 'https://reservo-two.vercel.app/',
     libelle_lien_site = 'Voir le site',
@@ -51,7 +51,7 @@ select
   || '— client, prestataire, administrateur — et une architecture générique : une seule table '
   || 'd''annonces avec des détails propres à chaque catégorie.',
   'Next.js, PostgreSQL, Prisma, Auth.js, Tailwind CSS',
-  null,
+  '/images/reservo.jpg',
   '🗓️',
   'https://reservo-two.vercel.app/',
   'Voir le site',
