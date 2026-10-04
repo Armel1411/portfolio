@@ -15,23 +15,60 @@ import { listeTechnologies } from "@/lib/donnees";
    Ne le laisse pas vide sur un projet qui n'est pas 100 % le tien.
    ============================================================ */
 
+/* Projet sans capture d'écran (souvent : encore en développement).
+   Plutôt qu'un emoji seul sur un dégradé, un petit aperçu de fichier
+   qui reprend ses technologies — cohérent avec le terminal du hero.
+   Dès qu'une capture est ajoutée dans l'admin, elle prend la place. */
+function VignetteCode({ projet, technologies }) {
+  const nomFichier = String(projet.titre || "projet")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "")
+    // Les trois premiers mots suffisent : « plateforme-de-reservation ».
+    .split("-")
+    .slice(0, 3)
+    .join("-");
+
+  return (
+    <div className="thumb thumb-code" aria-hidden="true">
+      <pre>
+        <span className="c-com">{`// ${nomFichier}.js`}</span>
+        {"\n"}
+        {technologies.slice(0, 4).map((techno) => (
+          <span key={techno}>
+            <span className="c-mot">import</span> <span className="c-nom">{techno.replace(/[^A-Za-z0-9]/g, "")}</span>{" "}
+            <span className="c-mot">from</span> <span className="c-chaine">{`"${techno.toLowerCase()}"`}</span>
+            {"\n"}
+          </span>
+        ))}
+        {"\n"}
+        <span className="c-mot">export default</span> <span className="c-nom">build</span>()
+        <span className="t-curseur" />
+      </pre>
+      <span className="thumb-emoji">{projet.emoji || "💻"}</span>
+    </div>
+  );
+}
+
 function CarteProjet({ projet }) {
   const technologies = listeTechnologies(projet.technologies);
 
   return (
-    <article className="project">
-      <div className="thumb">
-        {projet.image_url ? (
-          /* eslint-disable-next-line @next/next/no-img-element */
+    <article className="project spot">
+      {projet.image_url ? (
+        <div className="thumb">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={projet.image_url}
             alt={`Aperçu du projet ${projet.titre}`}
             loading="lazy"
           />
-        ) : (
-          <span>{projet.emoji || "💻"}</span>
-        )}
-      </div>
+        </div>
+      ) : (
+        <VignetteCode projet={projet} technologies={technologies} />
+      )}
 
       <div className="project-body">
         {projet.statut ? (

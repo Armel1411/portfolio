@@ -20,7 +20,7 @@ export default function Competences({ textes, competences }) {
 
           <div className="skills">
             {competences.map((competence) => (
-              <div className="skill-card" key={competence.id}>
+              <div className="skill-card spot" key={competence.id}>
                 <div className="skill-icon">{competence.icone}</div>
                 <h3>{competence.titre}</h3>
                 <p>{competence.description}</p>

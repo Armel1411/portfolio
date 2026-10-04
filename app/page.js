@@ -6,8 +6,15 @@ import Projets from "@/components/Projets";
 import Parcours from "@/components/Parcours";
 import Contact from "@/components/Contact";
 import PiedDePage from "@/components/PiedDePage";
+import EffetsPage from "@/components/EffetsPage";
 
-import { lireTextes, lireProjets, lireCompetences, lireParcours } from "@/lib/donnees";
+import {
+  lireTextes,
+  lireProjets,
+  lireCompetences,
+  lireParcours,
+  listeTechnologies,
+} from "@/lib/donnees";
 
 /* ============================================================
    Page d'accueil
@@ -38,10 +45,25 @@ export default async function PageAccueil() {
     lireParcours(),
   ]);
 
+  // Ce que le terminal du hero affiche. Les technologies viennent des
+  // deux premières cartes de compétences (front-end, back-end) : ce sont
+  // celles qui disent ton métier.
+  const terminal = {
+    technos: [
+      ...new Set(competences.slice(0, 2).flatMap((c) => listeTechnologies(c.technologies))),
+    ],
+    projets: projets.map((p) => p.titre),
+    competences: competences.map((c) => c.titre),
+    email: textes.email,
+    github: textes.github,
+    cvUrl: textes.cv_url && String(textes.cv_url).trim() !== "" ? textes.cv_url : null,
+  };
+
   return (
     <>
+      <EffetsPage />
       <Entete />
-      <Hero textes={textes} />
+      <Hero textes={textes} terminal={terminal} />
       <APropos textes={textes} />
       <Competences textes={textes} competences={competences} />
       <Projets textes={textes} projets={projets} academiques={academiques} />
